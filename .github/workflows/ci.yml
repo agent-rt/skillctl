@@ -7,7 +7,8 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  RUSTFLAGS: "-D warnings"
+  # 不设 RUSTFLAGS=-D warnings —— 与 workspace `[lints]` 重叠会把 pedantic warning 升级为 error。
+  # 关键 lint（unsafe/unwrap/expect/panic/dbg）已在 Cargo.toml 中 deny，足够把关。
 
 jobs:
   check:
