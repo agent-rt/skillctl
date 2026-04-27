@@ -15,10 +15,14 @@ pub struct SkillDoc {
     pub body: String,
 }
 
-/// SKILL.md 顶层 frontmatter（必填）。
+/// SKILL.md 顶层 frontmatter。
+///
+/// 严格必填：`name`、`description`。
+/// `version` 缺省为 `"0.0.0"`（与 agentskills.io 最小 frontmatter 兼容）。
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Frontmatter {
     pub name: String,
+    #[serde(default = "default_version")]
     pub version: String,
     pub description: String,
     #[serde(default)]
@@ -98,14 +102,14 @@ pub fn parse_str(input: &str) -> Result<SkillDoc> {
                 .map_err(|e| Error::InvalidSkill(format!("frontmatter parse failed: {e}")))?
         }
     };
-    let frontmatter =
+    let mut frontmatter =
         parsed.data.ok_or_else(|| Error::InvalidSkill("missing frontmatter".into()))?;
 
     if frontmatter.name.trim().is_empty() {
         return Err(Error::InvalidSkill("frontmatter `name` is empty".into()));
     }
     if frontmatter.version.trim().is_empty() {
-        return Err(Error::InvalidSkill("frontmatter `version` is empty".into()));
+        frontmatter.version = default_version();
     }
     if frontmatter.description.trim().is_empty() {
         return Err(Error::InvalidSkill("frontmatter `description` is empty".into()));
@@ -132,6 +136,10 @@ pub fn derive_summary(fm: &Frontmatter) -> String {
     let mut out: String = desc.chars().take(limit.saturating_sub(1)).collect();
     out.push('…');
     out
+}
+
+fn default_version() -> String {
+    "0.0.0".to_owned()
 }
 
 fn is_cjk(c: char) -> bool {

@@ -16,7 +16,7 @@ members = [
 ]
 
 [workspace.package]
-version      = "0.1.0"
+version      = "0.1.1"
 edition      = "2021"
 rust-version = "1.83"
 license      = "Apache-2.0"
@@ -26,17 +26,17 @@ authors      = ["Agent-RT contributors"]
 
 [workspace.dependencies]
 # 内部 crate
-skillctl-core     = { path = "crates/skillctl-core",     version = "0.1.0" }
-skillctl-id       = { path = "crates/skillctl-id",       version = "0.1.0" }
-skillctl-skill    = { path = "crates/skillctl-skill",    version = "0.1.0" }
-skillctl-profile  = { path = "crates/skillctl-profile",  version = "0.1.0" }
-skillctl-version  = { path = "crates/skillctl-version",  version = "0.1.0" }
-skillctl-store    = { path = "crates/skillctl-store",    version = "0.1.0" }
-skillctl-source   = { path = "crates/skillctl-source",   version = "0.1.0" }
-skillctl-agent    = { path = "crates/skillctl-agent",    version = "0.1.0" }
-skillctl-detect   = { path = "crates/skillctl-detect",   version = "0.1.0" }
-skillctl-protocol = { path = "crates/skillctl-protocol", version = "0.1.0" }
-skillctl-tui      = { path = "crates/skillctl-tui",      version = "0.1.0" }
+skillctl-core     = { path = "crates/skillctl-core",     version = "0.1.1" }
+skillctl-id       = { path = "crates/skillctl-id",       version = "0.1.1" }
+skillctl-skill    = { path = "crates/skillctl-skill",    version = "0.1.1" }
+skillctl-profile  = { path = "crates/skillctl-profile",  version = "0.1.1" }
+skillctl-version  = { path = "crates/skillctl-version",  version = "0.1.1" }
+skillctl-store    = { path = "crates/skillctl-store",    version = "0.1.1" }
+skillctl-source   = { path = "crates/skillctl-source",   version = "0.1.1" }
+skillctl-agent    = { path = "crates/skillctl-agent",    version = "0.1.1" }
+skillctl-detect   = { path = "crates/skillctl-detect",   version = "0.1.1" }
+skillctl-protocol = { path = "crates/skillctl-protocol", version = "0.1.1" }
+skillctl-tui      = { path = "crates/skillctl-tui",      version = "0.1.1" }
 
 # 外部
 clap               = { version = "4.6",  features = ["derive"] }

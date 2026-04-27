@@ -82,6 +82,102 @@ fn parse_github(rest: &str) -> Result<Source> {
     Ok(Source::Github { repo: format!("{owner}/{name}"), path, reference })
 }
 
+/// 已发现的 skill 候选项（用于 `discover` 路径）。
+#[derive(Debug, Clone)]
+pub struct DiscoveredSkill {
+    /// 仓库内相对路径（含 `SKILL.md` 父目录），例如 `skills/release-flow`。
+    pub rel_path: Utf8PathBuf,
+    /// `SKILL.md` 的绝对路径。
+    pub skill_md: Utf8PathBuf,
+}
+
+/// 在 fetched root 中扫描可安装的 skill。
+///
+/// 顺序：
+/// 1. `<root>/SKILL.md` —— 单 skill 仓库
+/// 2. `<root>/skills/*/SKILL.md` —— agentskills.io 标准布局
+///
+/// 命中任意一种且只命中一种时为单 skill；多个时为 discovery 候选集。
+pub fn discover_skills(root: &camino::Utf8Path) -> Result<Vec<DiscoveredSkill>> {
+    let mut out = Vec::new();
+    let root_md = root.join("SKILL.md");
+    if root_md.exists() {
+        out.push(DiscoveredSkill { rel_path: Utf8PathBuf::from(""), skill_md: root_md });
+    }
+    let skills_dir = root.join("skills");
+    if skills_dir.is_dir() {
+        let entries = fs_err::read_dir(skills_dir.as_std_path())
+            .map_err(|e| Error::Source(format!("read skills/: {e}")))?;
+        let mut names: Vec<String> = entries
+            .filter_map(|e| e.ok())
+            .filter(|e| e.file_type().map(|t| t.is_dir()).unwrap_or(false))
+            .filter_map(|e| e.file_name().to_str().map(str::to_owned))
+            .collect();
+        names.sort();
+        for name in names {
+            let md = skills_dir.join(&name).join("SKILL.md");
+            if md.exists() {
+                out.push(DiscoveredSkill {
+                    rel_path: Utf8PathBuf::from("skills").join(&name),
+                    skill_md: md,
+                });
+            }
+        }
+    }
+    Ok(out)
+}
+
+/// 在 fetched root 中按 sub-path 解析单个 skill 的 SKILL.md 位置。
+///
+/// 优先 literal 路径；不存在时回退到 `skills/<sub-path>` 约定。
+/// 调用方传 `Some("release-flow")` 在 agent-rt/skills 仓库 → 命中 `skills/release-flow/SKILL.md`。
+pub fn resolve_skill_path(root: &camino::Utf8Path, sub_path: Option<&str>) -> Result<Utf8PathBuf> {
+    match sub_path {
+        None => {
+            let direct = root.join("SKILL.md");
+            if direct.exists() {
+                Ok(root.to_owned())
+            } else {
+                Err(Error::Source("no SKILL.md at root".into()))
+            }
+        }
+        Some(p) => {
+            let direct = root.join(p);
+            if direct.join("SKILL.md").exists() {
+                return Ok(direct);
+            }
+            // agentskills.io 约定：skills/<name>/
+            let agentskills = root.join("skills").join(p);
+            if agentskills.join("SKILL.md").exists() {
+                return Ok(agentskills);
+            }
+            Err(Error::Source(format!("no SKILL.md at `{p}` or `skills/{p}` in fetched repo")))
+        }
+    }
+}
+
+/// 在 fetched root 中扫描 profile（.toml）候选项。
+pub fn discover_profiles(root: &camino::Utf8Path) -> Result<Vec<DiscoveredSkill>> {
+    let mut out = Vec::new();
+    let dir = root.join("profiles");
+    if !dir.is_dir() {
+        return Ok(out);
+    }
+    let entries = fs_err::read_dir(dir.as_std_path())
+        .map_err(|e| Error::Source(format!("read profiles/: {e}")))?;
+    let mut paths: Vec<Utf8PathBuf> = entries
+        .filter_map(|e| e.ok())
+        .filter_map(|e| Utf8PathBuf::from_path_buf(e.path()).ok())
+        .filter(|p| p.extension().is_some_and(|x| x == "toml"))
+        .collect();
+    paths.sort();
+    for p in paths {
+        let rel = Utf8PathBuf::from("profiles").join(p.file_name().unwrap_or("?"));
+        out.push(DiscoveredSkill { rel_path: rel, skill_md: p });
+    }
+    Ok(out)
+}
+
 /// 解析并拉取来源。
 pub fn fetch(source: &Source) -> Result<Fetched> {
     match source {
@@ -167,12 +263,24 @@ mod git_cli {
         };
 
         let root = match sub_path {
-            Some(p) => temp_path.join(p),
+            Some(p) => {
+                let direct = temp_path.join(p);
+                if direct.exists() {
+                    direct
+                } else {
+                    // agentskills.io 约定 fallback：`<sub>` → `skills/<sub>`
+                    let fallback = temp_path.join("skills").join(p);
+                    if fallback.exists() {
+                        fallback
+                    } else {
+                        return Err(Error::Source(format!(
+                            "path not found in repo: `{p}` (also tried `skills/{p}`)"
+                        )));
+                    }
+                }
+            }
             None => temp_path.clone(),
         };
-        if !root.exists() {
-            return Err(Error::Source(format!("path not found in repo: {root}")));
-        }
 
         Ok(Fetched {
             root,

@@ -126,6 +126,137 @@ impl App {
     }
 }
 
+/// 来自 `skillctl add` 多 skill 仓库的待安装候选项。
+#[derive(Debug, Clone)]
+pub struct DiscoverItem {
+    pub index: usize,
+    pub proposed_id: String,
+    pub description: String,
+    pub path: String,
+}
+
+/// `skillctl add github:repo` 的 TUI：多选 → 返回选中的 index 列表。
+pub fn select_for_install(items: Vec<DiscoverItem>) -> Result<Vec<usize>> {
+    if items.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut terminal = ratatui::init();
+    let result = run_install_loop(&mut terminal, items);
+    ratatui::restore();
+    result
+}
+
+fn run_install_loop(
+    terminal: &mut ratatui::DefaultTerminal,
+    items: Vec<DiscoverItem>,
+) -> Result<Vec<usize>> {
+    let mut selected: HashSet<usize> = HashSet::new();
+    let mut cursor: usize = 0;
+    let mut cancelled = false;
+
+    loop {
+        terminal
+            .draw(|frame| draw_install(frame, &items, &selected, cursor))
+            .map_err(|e| Error::other(format!("tui draw: {e}")))?;
+        let evt = crossterm::event::read().map_err(|e| Error::other(format!("tui event: {e}")))?;
+        let Event::Key(key) = evt else { continue };
+        if key.kind != KeyEventKind::Press {
+            continue;
+        }
+        match key.code {
+            KeyCode::Esc | KeyCode::Char('q') => {
+                cancelled = true;
+                break;
+            }
+            KeyCode::Enter => break,
+            KeyCode::Up => {
+                if cursor > 0 {
+                    cursor -= 1;
+                }
+            }
+            KeyCode::Down => {
+                if cursor + 1 < items.len() {
+                    cursor += 1;
+                }
+            }
+            KeyCode::Char(' ') => {
+                if selected.contains(&cursor) {
+                    selected.remove(&cursor);
+                } else {
+                    selected.insert(cursor);
+                }
+            }
+            KeyCode::Char('a') => {
+                if selected.len() == items.len() {
+                    selected.clear();
+                } else {
+                    selected = (0..items.len()).collect();
+                }
+            }
+            _ => {}
+        }
+    }
+    if cancelled {
+        return Err(Error::other("cancelled"));
+    }
+    let mut out: Vec<usize> = selected.into_iter().collect();
+    out.sort_unstable();
+    Ok(out)
+}
+
+fn draw_install(
+    frame: &mut ratatui::Frame,
+    items: &[DiscoverItem],
+    selected: &HashSet<usize>,
+    cursor: usize,
+) {
+    let area = frame.area();
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([Constraint::Length(3), Constraint::Min(3), Constraint::Length(3)])
+        .split(area);
+
+    let title = format!("skillctl add — discovered {} skills, select to install", items.len());
+    let header =
+        Paragraph::new(title).block(Block::default().borders(Borders::ALL).title("skillctl add"));
+    frame.render_widget(header, chunks[0]);
+
+    let list_items: Vec<ListItem> = items
+        .iter()
+        .enumerate()
+        .map(|(i, it)| {
+            let mark = if selected.contains(&i) { "[x]" } else { "[ ]" };
+            let line = Line::from(vec![
+                Span::styled(mark, Style::default().fg(Color::Yellow)),
+                Span::raw(" "),
+                Span::styled(&it.proposed_id, Style::default().add_modifier(Modifier::BOLD)),
+                Span::raw("  "),
+                Span::styled(&it.description, Style::default().fg(Color::Gray)),
+                Span::raw("  "),
+                Span::styled(format!("({})", &it.path), Style::default().fg(Color::DarkGray)),
+            ]);
+            ListItem::new(line)
+        })
+        .collect();
+
+    let mut list_state = ListState::default();
+    list_state.select(Some(cursor));
+    let list = List::new(list_items)
+        .block(Block::default().borders(Borders::ALL).title(format!(
+            " {}/{} selected ",
+            selected.len(),
+            items.len()
+        )))
+        .highlight_style(Style::default().bg(Color::DarkGray).add_modifier(Modifier::BOLD))
+        .highlight_symbol("▶ ");
+    frame.render_stateful_widget(list, chunks[1], &mut list_state);
+
+    let help =
+        Paragraph::new("↑↓ move · Space toggle · a (de)select all · Enter install · Esc/q cancel")
+            .block(Block::default().borders(Borders::ALL));
+    frame.render_widget(help, chunks[2]);
+}
+
 /// 启动 TUI 多选。
 ///
 /// 返回 (core_ids, extra_ids)。取消时返回 `Error::Other("cancelled")`。

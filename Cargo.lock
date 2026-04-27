@@ -1578,7 +1578,7 @@ checksum = "b2aa850e253778c88a04c3d7323b043aeda9d3e30d5971937c1855769763678e"
 
 [[package]]
 name = "skillctl-agent"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "camino",
  "fs-err",
@@ -1588,7 +1588,7 @@ dependencies = [
 
 [[package]]
 name = "skillctl-cli"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "assert_cmd",
  "camino",
@@ -1618,7 +1618,7 @@ dependencies = [
 
 [[package]]
 name = "skillctl-core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "camino",
  "serde",
@@ -1627,7 +1627,7 @@ dependencies = [
 
 [[package]]
 name = "skillctl-detect"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "camino",
  "skillctl-core",
@@ -1636,7 +1636,7 @@ dependencies = [
 
 [[package]]
 name = "skillctl-id"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "serde",
  "skillctl-core",
@@ -1644,7 +1644,7 @@ dependencies = [
 
 [[package]]
 name = "skillctl-profile"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "camino",
  "serde",
@@ -1655,7 +1655,7 @@ dependencies = [
 
 [[package]]
 name = "skillctl-protocol"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "serde",
  "serde_json",
@@ -1666,7 +1666,7 @@ dependencies = [
 
 [[package]]
 name = "skillctl-skill"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "gray_matter",
  "serde",
@@ -1677,7 +1677,7 @@ dependencies = [
 
 [[package]]
 name = "skillctl-source"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "camino",
  "fs-err",
@@ -1689,7 +1689,7 @@ dependencies = [
 
 [[package]]
 name = "skillctl-store"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "camino",
  "dirs",
@@ -1709,7 +1709,7 @@ dependencies = [
 
 [[package]]
 name = "skillctl-tui"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "crossterm",
  "ratatui",
@@ -1721,7 +1721,7 @@ dependencies = [
 
 [[package]]
 name = "skillctl-version"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "semver",
  "serde",
