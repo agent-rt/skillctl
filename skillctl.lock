@@ -1,0 +1,49 @@
+[skills."local/skillctl-self"]
+id = "local/skillctl-self"
+namespace = "local"
+name = "skillctl-self"
+version = "0.1.0"
+tier = "core"
+source = "global"
+global_ref = "local/skillctl-self@0.1.0"
+checksum = "sha256:3899cdb24e369b1391c81f9cde878150ebaabf0fb24b566215be5f98dc5b5d6a"
+summary = "skillctl 自身的开发约定：workspace 布局、协议不变量、release profile、测试策略"
+triggers = [
+    "skillctl",
+    "AGENTS.md",
+    "profile",
+    "registry",
+]
+languages = ["rust"]
+tags = [
+    "skillctl",
+    "meta",
+    "workspace",
+]
+
+[skills."official/rust-review"]
+id = "official/rust-review"
+namespace = "official"
+name = "rust-review"
+version = "1.0.0"
+tier = "core"
+source = "global"
+global_ref = "official/rust-review@1.0.0"
+checksum = "sha256:1a2c378b55c1aa05401dcdda5b42f7b1e0bd67f02985a2cc9c89c00f058f4825"
+summary = "Rust 工程化审查：所有权、零拷贝、强类型建模、结构化错误、unsafe 审计"
+triggers = [
+    "rust",
+    "cargo",
+    "clippy",
+    "unsafe",
+    "ownership",
+    "lifetime",
+    "borrow",
+]
+languages = ["rust"]
+tags = [
+    "rust",
+    "review",
+    "quality",
+    "idiomatic",
+]

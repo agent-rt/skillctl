@@ -1,0 +1,19 @@
+[package]
+name         = "skillctl-tui"
+description  = "skillctl: `use` multi-select TUI (feature-gated to keep the binary slim)"
+version.workspace      = true
+edition.workspace      = true
+rust-version.workspace = true
+license.workspace      = true
+repository.workspace   = true
+
+[dependencies]
+skillctl-core    = { workspace = true }
+skillctl-id      = { workspace = true }
+skillctl-store   = { workspace = true }
+skillctl-detect  = { workspace = true }
+ratatui          = { workspace = true }
+crossterm        = { workspace = true }
+
+[lints]
+workspace = true

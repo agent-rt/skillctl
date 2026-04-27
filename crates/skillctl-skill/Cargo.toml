@@ -1,0 +1,18 @@
+[package]
+name         = "skillctl-skill"
+description  = "skillctl: SKILL.md parsing, frontmatter extraction, lenient validation"
+version.workspace      = true
+edition.workspace      = true
+rust-version.workspace = true
+license.workspace      = true
+repository.workspace   = true
+
+[dependencies]
+skillctl-core = { workspace = true }
+skillctl-id   = { workspace = true }
+serde         = { workspace = true }
+serde_json    = { workspace = true }
+gray_matter   = { workspace = true }
+
+[lints]
+workspace = true

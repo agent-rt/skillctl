@@ -1,0 +1,11 @@
+[project]
+name = "skillctl"
+started_from = ["skillctl-dev"]
+
+[skills.core]
+"local/skillctl-self" = "0.1.0"
+"official/rust-review" = "1.0.0"
+
+[agent]
+enabled = true
+target = "AGENTS.md"

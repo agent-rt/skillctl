@@ -1,0 +1,10 @@
+[profile]
+name = "skillctl-dev"
+description = "为 skillctl 自身开发起手：含 rust-review + skillctl-self 元技能"
+author = "skillctl"
+
+[skills.core]
+"official/rust-review" = "1.0.0"
+"local/skillctl-self"  = "0.1.0"
+
+[skills.extra]

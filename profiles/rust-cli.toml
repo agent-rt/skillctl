@@ -1,0 +1,11 @@
+[profile]
+name = "rust-cli"
+description = "Rust CLI 项目起手包：审查 + 工具链"
+author = "skillctl"
+
+# core 段：进入项目即在场，Agent 视为已加载指令
+[skills.core]
+"official/rust-review" = "1.0.0"
+
+# extra 段：catalog 中可见，按需加载
+[skills.extra]

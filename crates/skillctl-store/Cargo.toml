@@ -1,0 +1,29 @@
+[package]
+name         = "skillctl-store"
+description  = "skillctl: global store + project manifest/lock/index read/write"
+version.workspace      = true
+edition.workspace      = true
+rust-version.workspace = true
+license.workspace      = true
+repository.workspace   = true
+
+[dependencies]
+skillctl-core    = { workspace = true }
+skillctl-id      = { workspace = true }
+skillctl-skill   = { workspace = true }
+skillctl-profile = { workspace = true }
+skillctl-version = { workspace = true }
+serde            = { workspace = true }
+serde_json       = { workspace = true }
+toml             = { workspace = true }
+camino           = { workspace = true }
+fs-err           = { workspace = true }
+walkdir          = { workspace = true }
+sha2             = { workspace = true }
+dirs             = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+
+[lints]
+workspace = true

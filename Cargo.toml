@@ -1,0 +1,95 @@
+[workspace]
+resolver = "2"
+members = [
+    "apps/skillctl-cli",
+    "crates/skillctl-core",
+    "crates/skillctl-id",
+    "crates/skillctl-skill",
+    "crates/skillctl-profile",
+    "crates/skillctl-version",
+    "crates/skillctl-store",
+    "crates/skillctl-source",
+    "crates/skillctl-agent",
+    "crates/skillctl-detect",
+    "crates/skillctl-protocol",
+    "crates/skillctl-tui",
+]
+
+[workspace.package]
+version      = "0.1.0"
+edition      = "2021"
+rust-version = "1.83"
+license      = "Apache-2.0"
+repository   = "https://github.com/agent-rt/skillctl"
+homepage     = "https://github.com/agent-rt/skillctl"
+authors      = ["Agent-RT contributors"]
+
+[workspace.dependencies]
+# 内部 crate
+skillctl-core     = { path = "crates/skillctl-core",     version = "0.1.0" }
+skillctl-id       = { path = "crates/skillctl-id",       version = "0.1.0" }
+skillctl-skill    = { path = "crates/skillctl-skill",    version = "0.1.0" }
+skillctl-profile  = { path = "crates/skillctl-profile",  version = "0.1.0" }
+skillctl-version  = { path = "crates/skillctl-version",  version = "0.1.0" }
+skillctl-store    = { path = "crates/skillctl-store",    version = "0.1.0" }
+skillctl-source   = { path = "crates/skillctl-source",   version = "0.1.0" }
+skillctl-agent    = { path = "crates/skillctl-agent",    version = "0.1.0" }
+skillctl-detect   = { path = "crates/skillctl-detect",   version = "0.1.0" }
+skillctl-protocol = { path = "crates/skillctl-protocol", version = "0.1.0" }
+skillctl-tui      = { path = "crates/skillctl-tui",      version = "0.1.0" }
+
+# 外部
+clap               = { version = "4.6",  features = ["derive"] }
+serde              = { version = "1.0",  features = ["derive"] }
+serde_json         = "1.0"
+toml               = "1.1"
+semver             = { version = "1.0",  features = ["serde"] }
+thiserror          = "2.0"
+gray_matter        = "0.3"
+walkdir            = "2.5"
+sha2               = "0.11"
+dirs               = "6.0"
+which              = "8.0"
+ratatui            = "0.30"
+crossterm          = "0.29"
+camino             = { version = "1.2",  features = ["serde1"] }
+fs-err             = "3.3"
+tracing            = "0.1"
+tracing-subscriber = { version = "0.3",  features = ["env-filter"] }
+
+# dev
+tempfile           = "3.27"
+assert_cmd         = "2.2"
+predicates         = "3.1"
+insta              = "1.47"
+
+[workspace.lints.rust]
+unsafe_code             = "forbid"
+unused_must_use         = "deny"
+missing_debug_implementations = "warn"
+
+[workspace.lints.clippy]
+# 生产级 Rust 规约（对齐 rust_expert 协议）
+unwrap_used   = "deny"
+expect_used   = "deny"
+panic         = "deny"
+todo          = "warn"
+dbg_macro     = "deny"
+print_stdout  = "warn"   # CLI 入口允许，库代码警告
+print_stderr  = "warn"
+unimplemented = "warn"
+# 风格
+pedantic      = { level = "warn", priority = -1 }
+module_name_repetitions = "allow"
+missing_errors_doc      = "allow"
+missing_panics_doc      = "allow"
+
+[profile.release]
+lto             = "fat"
+codegen-units   = 1
+strip           = "symbols"
+panic           = "abort"
+opt-level       = "z"
+
+[profile.dev]
+debug = "line-tables-only"

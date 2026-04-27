@@ -1,0 +1,28 @@
+[package]
+name         = "skillctl-source"
+description  = "skillctl: source resolution (github / local / url) — feature-gated network/git"
+version.workspace      = true
+edition.workspace      = true
+rust-version.workspace = true
+license.workspace      = true
+repository.workspace   = true
+
+[dependencies]
+skillctl-core    = { workspace = true }
+skillctl-version = { workspace = true }
+serde            = { workspace = true }
+camino           = { workspace = true }
+fs-err           = { workspace = true }
+tempfile         = { workspace = true }
+
+[features]
+default     = ["source-git-cli"]
+# 通过系统 `git` 命令获取仓库（默认，二进制最小）
+source-git-cli = []
+# 通过 git2 库（备选，引入 OpenSSL 依赖）
+source-git2 = []
+# 通过 reqwest 拉 SKILL.md URL
+source-http = []
+
+[lints]
+workspace = true
